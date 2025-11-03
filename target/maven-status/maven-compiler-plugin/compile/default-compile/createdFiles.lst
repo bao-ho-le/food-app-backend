@@ -1,0 +1,16 @@
+com/example/foodie/dtos/AdminDTO.class
+com/example/foodie/config/DataInitializer.class
+com/example/foodie/enums/Gender.class
+com/example/foodie/repos/UserRepository.class
+com/example/foodie/models/User$UserBuilder.class
+com/example/foodie/controllers/UserController.class
+com/example/foodie/models/Role.class
+com/example/foodie/dtos/UserDTO.class
+com/example/foodie/repos/RoleRepository.class
+com/example/foodie/enums/RoleName.class
+com/example/foodie/dtos/UserResponseDTO.class
+com/example/foodie/dtos/UserResponseDTO$UserResponseDTOBuilder.class
+com/example/foodie/services/interfaces/UserService.class
+com/example/foodie/models/User.class
+com/example/foodie/dtos/AdminResponseDTO.class
+com/example/foodie/FoodieApp.class
