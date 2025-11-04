@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // <--- Bắt buộc
                 .authorizeHttpRequests(request -> request
                     .requestMatchers(GET,
-                            String.format("%s/tags", apiPrefix)).hasRole(RoleName.ADMIN.name())
+                            String.format("%s/tags", apiPrefix)).permitAll()
 
                     .requestMatchers(POST,
                             String.format("%s/users/login", apiPrefix),

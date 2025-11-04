@@ -23,6 +23,7 @@ public class UserResponseDTO {
     private String phoneNumber;
     private String email;
     private String token;
+    private RoleName roleName;
 
     public static UserResponseDTO createUserResponseFromDTO(UserDTO userDTO, String token){
         return  UserResponseDTO.builder()
@@ -32,6 +33,7 @@ public class UserResponseDTO {
                 .gender(userDTO.getGender())
                 .birthday(userDTO.getBirthday())
                 .token(token)
+                .roleName(RoleName.USER)
                 .build();
     }
 }
