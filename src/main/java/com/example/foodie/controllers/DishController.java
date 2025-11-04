@@ -1,6 +1,8 @@
 package com.example.foodie.controllers;
 
+import com.example.foodie.dtos.DishDTO;
 import com.example.foodie.models.Dish;
+import com.example.foodie.models.Tag;
 import com.example.foodie.services.interfaces.DishService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ public class DishController {
     public ResponseEntity<?> getAllDishes(){
 
         try {
-            List<Dish> dishes = dishService.getAllDishes();
+            List<DishDTO> dishes = dishService.getAllDishes();
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -33,6 +35,20 @@ public class DishController {
         }
     }
 
+    @GetMapping("/{dishId}/tags")
+    public ResponseEntity<?> getTagsByDishId(@PathVariable Integer dishId){
+        try {
+            List<Tag> tags = dishService.getAllTags(dishId); // gọi service để lấy tag
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(tags);
+        } catch (Exception e){
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
     @PostMapping
     public ResponseEntity<?> createDish(@Valid @RequestBody Dish dish){
 

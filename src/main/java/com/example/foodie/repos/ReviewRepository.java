@@ -14,4 +14,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Query("SELECT review FROM Review review WHERE review.orderDish.dish.id = :dishId")
     List<Review> findAllByDishId(@Param("dishId") Integer dishId);
     boolean existsByOrderDish(OrderDish orderDish);
+
+    @Query("SELECT COALESCE(AVG(r.rating), 0) FROM Review r WHERE r.orderDish.dish.id = :dishId")
+    float findAverageRatingByDishId(@Param("dishId") Integer dishId);
 }

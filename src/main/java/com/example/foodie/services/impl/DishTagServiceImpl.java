@@ -41,5 +41,4 @@ public class DishTagServiceImpl implements DishTagService {
             return dishTagRepository.save(newDishTag);
         }
     }
-
 }

@@ -46,9 +46,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // <--- Bắt buộc
                 .authorizeHttpRequests(request -> request
                     .requestMatchers(GET,
-                            String.format("%s/user/alls/**", apiPrefix)).hasRole(RoleName.ADMIN.name())
+                            String.format("%s/tags", apiPrefix)).hasRole(RoleName.ADMIN.name())
+
                     .requestMatchers(POST,
                             String.format("%s/users/login", apiPrefix),
+                            String.format("%s/users/register-admin", apiPrefix),
                             String.format("%s/users/register", apiPrefix))
 
                     .permitAll()

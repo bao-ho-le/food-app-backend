@@ -1,6 +1,7 @@
 package com.example.foodie.dtos;
 
 import com.example.foodie.enums.Gender;
+import com.example.foodie.enums.RoleName;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

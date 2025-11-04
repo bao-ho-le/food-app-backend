@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 public class AdminResponseDTO extends UserResponseDTO{
-    private Role role;
 
     public static AdminResponseDTO createAdminResponseFromDTO(AdminDTO adminDTO){
         return  AdminResponseDTO.builder()
