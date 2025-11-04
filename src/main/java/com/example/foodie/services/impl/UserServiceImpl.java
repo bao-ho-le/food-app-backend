@@ -41,10 +41,12 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = encoder.encode(userDTO.getPassword());
         userDTO.setPassword(encodedPassword);
 
+        String token = jwtService.generateToken(userDTO.getEmail());
+
         User user = User.createUserFromDTO(userDTO, role);
         userRepository.save(user);
 
-        return UserResponseDTO.createUserResponseFromDTO(userDTO);
+        return UserResponseDTO.createUserResponseFromDTO(userDTO, token);
     }
 
     @Override

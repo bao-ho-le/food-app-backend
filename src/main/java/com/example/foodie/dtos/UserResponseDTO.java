@@ -22,14 +22,16 @@ public class UserResponseDTO {
     private Gender gender;
     private String phoneNumber;
     private String email;
+    private String token;
 
-    public static UserResponseDTO createUserResponseFromDTO(UserDTO userDTO){
+    public static UserResponseDTO createUserResponseFromDTO(UserDTO userDTO, String token){
         return  UserResponseDTO.builder()
                 .fullName(userDTO.getFullName())
                 .email(userDTO.getEmail())
                 .phoneNumber(userDTO.getPhoneNumber())
                 .gender(userDTO.getGender())
                 .birthday(userDTO.getBirthday())
+                .token(token)
                 .build();
     }
 }
