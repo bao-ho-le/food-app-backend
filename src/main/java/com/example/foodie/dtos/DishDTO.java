@@ -28,4 +28,6 @@ public class DishDTO {
     private float rating; // điểm đánh giá món ăn
 
     private List<Tag> tags; // danh sách tag của món
+
+    private String url;
 }
