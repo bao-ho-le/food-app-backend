@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -72,6 +73,37 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Đổi mật khẩu thành công");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/profiles")
+    public ResponseEntity<?> getUserProfile(Authentication authentication){
+        try {
+            UserProfileDTO userProfile = userService.getUserProfileByToken(authentication);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(userProfile);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/profiles")
+    public ResponseEntity<?> updateUserProfile(Authentication authentication,
+                                               @Valid @RequestBody UserProfileUpdateDTO userProfileUpdateDTO){
+        try {
+            UserProfileDTO userProfile = userService.updateProfile(authentication, userProfileUpdateDTO);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(userProfile);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

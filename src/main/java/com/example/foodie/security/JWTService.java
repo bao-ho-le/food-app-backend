@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,17 +22,18 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
+    @Value("${jwt.secret}")
     private String secretKey;
 
-    public JWTService() throws NoSuchAlgorithmException {
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e){
-            throw new NoSuchAlgorithmException(e);
-        }
-    }
+//    public JWTService() throws NoSuchAlgorithmException {
+//        try {
+//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//            SecretKey sk = keyGen.generateKey();
+//            this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+//        } catch (NoSuchAlgorithmException e){
+//            throw new NoSuchAlgorithmException(e);
+//        }
+//    }
 
     public String generateToken(String email) {
         Map<String,Object> claims = new HashMap<>();

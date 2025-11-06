@@ -115,6 +115,51 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserProfileDTO getUserProfileByToken(Authentication authentication){
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+
+        return UserProfileDTO.builder()
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .phoneNumber(user.getPhoneNumber())
+                .birthday(user.getBirthday())
+                .fullName(user.getFullName())
+                .build();
+    }
+
+    @Override
+    public UserProfileDTO updateProfile(Authentication authentication, UserProfileUpdateDTO userProfileUpdateDTO){
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        user.setFullName(userProfileUpdateDTO.getFullName());
+        user.setEmail(userProfileUpdateDTO.getEmail());
+        user.setPhoneNumber(userProfileUpdateDTO.getPhoneNumber());
+        user.setGender(userProfileUpdateDTO.getGender());
+        user.setBirthday(userProfileUpdateDTO.getBirthday());
+
+        userRepository.save(user);
+
+
+        return UserProfileDTO.builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .gender(user.getGender())
+                .birthday(user.getBirthday())
+                .build();
+    }
+
+
+
      /* @PostConstruct là annotation của Java, nó đánh dấu một phương thức sẽ tự động chạy một lần duy
         nhất ngay sau khi bean được khởi tạo
         Dùng ở đây để mã hoá tất cả mật khẩu chưa được mã hoá, do chức năng Security ở project này được thêm vào sau cùng

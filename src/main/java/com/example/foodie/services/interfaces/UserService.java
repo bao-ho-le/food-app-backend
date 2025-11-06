@@ -1,6 +1,7 @@
 package com.example.foodie.services.interfaces;
 
 import com.example.foodie.dtos.*;
+import org.springframework.security.core.Authentication;
 
 public interface UserService {
     UserResponseDTO register(UserDTO userDTO);
@@ -12,4 +13,7 @@ public interface UserService {
 
     boolean existsByEmail(String email);
     boolean existsByPhoneNumber(String phoneNumber);
+
+    UserProfileDTO getUserProfileByToken(Authentication authentication);
+    UserProfileDTO updateProfile(Authentication authentication, UserProfileUpdateDTO userProfileUpdateDTO);
 }
