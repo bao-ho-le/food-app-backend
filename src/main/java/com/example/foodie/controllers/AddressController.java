@@ -1,10 +1,13 @@
 package com.example.foodie.controllers;
 
+import com.example.foodie.dtos.AddressDTO;
 import com.example.foodie.models.Address;
 import com.example.foodie.services.interfaces.AddressService;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +23,10 @@ public class AddressController extends BaseController<Address> {
         this.addressService = addressService;
     }
 
-    @PostMapping("/user/{user_id}")
-    public ResponseEntity<?> addAddressByUserId(@PathVariable("user_id") Integer userId, @RequestBody Address address) {
+    @PostMapping("/user")
+    public ResponseEntity<?> addAddressByUserId(Authentication authentication,@Valid @RequestBody AddressDTO addressDTO) {
         try {
-            Address newAddress = addressService.addAddressByUserId(userId, address);
+            Address newAddress = addressService.addAddressByUserId(authentication, addressDTO);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -36,9 +39,9 @@ public class AddressController extends BaseController<Address> {
         }
     }
 
-    @GetMapping("/user/{user_id}")
-    public ResponseEntity<?> getAllAddressesByUserId(@PathVariable("user_id") Integer userId) {
-        List<Address> allAddresses = addressService.getAllAddressesByUserId(userId);
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllAddressesByUserId(Authentication authentication) {
+        List<Address> allAddresses = addressService.getAllAddressesByUser(authentication);
 
         try{
         return ResponseEntity
@@ -51,4 +54,38 @@ public class AddressController extends BaseController<Address> {
                     .body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/user/{address_id}")
+    public ResponseEntity<?> deleteAddress(@PathVariable(name="address_id") Integer addressId) {
+        addressService.deleteAddressById(addressId);
+
+        try{
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("Xoá địa chỉ thành công");
+
+        } catch(RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/user/{address_id}")
+    public ResponseEntity<?> updateAddress(@PathVariable(name="address_id") Integer addressId,
+                                            @Valid @RequestBody AddressDTO addressDTO) {
+        AddressDTO addressDTORes = addressService.updateAddress(addressId, addressDTO);
+
+        try{
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(addressDTORes);
+
+        } catch(RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
 }

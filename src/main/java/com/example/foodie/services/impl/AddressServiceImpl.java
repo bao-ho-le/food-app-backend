@@ -1,10 +1,12 @@
 package com.example.foodie.services.impl;
 
+import com.example.foodie.dtos.AddressDTO;
 import com.example.foodie.models.Address;
 import com.example.foodie.models.User;
 import com.example.foodie.repos.AddressRepository;
 import com.example.foodie.repos.UserRepository;
 import com.example.foodie.services.interfaces.AddressService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,35 +24,65 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
     }
 
     @Override
-    public Address addAddressByUserId(Integer userId, Address address){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Không tồn tại user"));
+    public Address addAddressByUserId(Authentication authentication, AddressDTO addressDTO){
+        String email = authentication.getName();
 
-        Optional<Address> addressExisting = addressRepository.findByUser_Id(userId);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
-        boolean userHasSameAddress = addressExisting.isPresent()
-                && addressExisting.get().getAddress().equals(address.getAddress());
+        List<Address> allAddressesExisting = addressRepository.findByUser_Id(user.getId());
 
-        if (userHasSameAddress){
-            throw new RuntimeException("User đã có địa chỉ này rồi");
+        for (Address address: allAddressesExisting){
+            if (address.getAddress().equals(addressDTO.getAddress()))
+                throw new RuntimeException("User đã có địa chỉ này rồi");
         }
 
         Address newAddress = Address.builder()
-                .address(address.getAddress())
+                .address(addressDTO.getAddress())
                 .user(user)
-                .isDefault(address.getIsDefault())
+                .isDefault(addressDTO.getIsDefault())
                 .build();
 
         return addressRepository.save(newAddress);
     }
 
     @Override
-    public List<Address> getAllAddressesByUserId(Integer userId){
-        List<Address> allAddresses = addressRepository.findAllByUser_Id(userId);
+    public List<Address> getAllAddressesByUser(Authentication authentication){
+        String email = authentication.getName();
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        List<Address> allAddresses = addressRepository.findByUser_Id(user.getId());
         if (allAddresses.isEmpty()){
             throw new RuntimeException("User không có địa chỉ nào");
         }
         return allAddresses;
     }
+
+    @Override
+    public void deleteAddressById(Integer addressId){
+        if (!addressRepository.existsById(addressId)) {
+            throw new RuntimeException("Địa chỉ không tồn tại");
+        }
+        addressRepository.deleteById(addressId);
+    }
+
+    @Override
+    public AddressDTO updateAddress(Integer addressId, AddressDTO addressDTO){
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại"));
+
+        address.setAddress(addressDTO.getAddress());
+        address.setIsDefault(addressDTO.getIsDefault());
+        addressRepository.save(address);
+
+        return AddressDTO.builder()
+                .address(addressDTO.getAddress())
+                .isDefault(addressDTO.getIsDefault())
+                .build();
+
+    }
+
+
 }
