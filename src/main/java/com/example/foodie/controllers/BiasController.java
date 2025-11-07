@@ -7,7 +7,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/bias")
@@ -16,9 +19,9 @@ public class BiasController {
     private BiasService biasService;
 
     @PostMapping
-    public ResponseEntity<?> addBias(@Valid @RequestBody BiasDTO biasDTO){
+    public ResponseEntity<?> addBias(Authentication authentication, @Valid @RequestBody BiasDTO biasDTO){
         try {
-            Bias newBias = biasService.addBias(biasDTO);
+            Bias newBias = biasService.addBias(authentication, biasDTO);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -32,13 +35,30 @@ public class BiasController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateBias(@Valid @RequestBody BiasDTO biasDTO){
+    public ResponseEntity<?> updateBias(Authentication authentication,@Valid @RequestBody BiasDTO biasDTO){
         try{
-            Bias updatedBias = biasService.updateBias(biasDTO);
+
+            Bias updatedBias = biasService.updateBias(authentication, biasDTO);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(updatedBias);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllBiases(Authentication authentication){
+        try{
+            List<Bias> biases = biasService.getAllBiasByUser(authentication);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(biases);
 
         } catch (RuntimeException e) {
             return ResponseEntity

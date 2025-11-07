@@ -9,8 +9,10 @@ import com.example.foodie.repos.TagRepository;
 import com.example.foodie.repos.UserRepository;
 import com.example.foodie.services.interfaces.BiasService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,18 +23,24 @@ public class BiasServiceImpl implements BiasService {
     private TagRepository tagRepository;
 
     @Override
-    public Bias addBias(BiasDTO biasDTO){
-        boolean isBiasExist = biasRepository.existsByUser_IdAndTag_Id(biasDTO.getUserId(), biasDTO.getTagId());
+    public Bias addBias(Authentication authentication, BiasDTO biasDTO){
 
-        if(isBiasExist){
-            throw new RuntimeException("Bias đã tồn tại");
-        }
+        String email = authentication.getName();
 
-        User user = userRepository.findById(biasDTO.getUserId())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
         Tag tag = tagRepository.findById(biasDTO.getTagId())
                 .orElseThrow(() -> new RuntimeException("Tag không tồn tại"));
+
+        Optional<Bias> biasExisting = biasRepository.findByUser_idAndTag_Id(
+                user.getId(),
+                biasDTO.getTagId()
+        );
+
+        if (biasExisting.isPresent()){
+            throw new RuntimeException("Tag này đã có rồi.");
+        }
 
         Bias newBias = Bias.builder()
                 .user(user)
@@ -44,16 +52,18 @@ public class BiasServiceImpl implements BiasService {
     }
 
     @Override
-    public Bias updateBias(BiasDTO biasDTO){
+    public Bias updateBias(Authentication authentication, BiasDTO biasDTO){
 
-        User user = userRepository.findById(biasDTO.getUserId())
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
         Tag tag = tagRepository.findById(biasDTO.getTagId())
                 .orElseThrow(() -> new RuntimeException("Tag không tồn tại"));
 
         Optional<Bias> biasExisting = biasRepository.findByUser_idAndTag_Id(
-                biasDTO.getUserId(),
+                user.getId(),
                 biasDTO.getTagId()
         );
 
@@ -71,4 +81,17 @@ public class BiasServiceImpl implements BiasService {
             return biasRepository.save(newBias);
         }
     }
+
+    @Override
+    public List<Bias> getAllBiasByUser(Authentication authentication){
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        List<Bias> biases = user.getBiases();
+
+        return biases;
+    }
+
 }

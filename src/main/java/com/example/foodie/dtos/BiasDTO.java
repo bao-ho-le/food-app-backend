@@ -7,9 +7,6 @@ import lombok.Data;
 
 @Data
 public class BiasDTO {
-    @NotNull(message = "user id không được trống")
-    private Integer userId;
-
     @NotNull(message = "tag id không được trống")
     private Integer tagId;
 
