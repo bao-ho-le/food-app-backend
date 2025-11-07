@@ -94,4 +94,31 @@ public class BiasServiceImpl implements BiasService {
         return biases;
     }
 
+    @Override
+    public void attachAllBiasesToUser(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        List<Tag> allTags = tagRepository.findAll();
+
+        if (allTags.isEmpty())
+            throw new RuntimeException("Hiện chưa có tag nào trong hệ thống");
+
+        for (Tag tag : allTags) {
+            // Kiểm tra user đã có bias này chưa
+            boolean alreadyHas = user.getBiases().stream()
+                    .anyMatch(bias -> bias.getTag().getId().equals(tag.getId()));
+
+            if (!alreadyHas) {
+                Bias bias = new Bias();
+                bias.setTag(tag);
+                bias.setUser(user);
+                bias.setScore(2.5f);
+                user.getBiases().add(bias);
+            }
+        }
+
+        userRepository.save(user);
+    }
 }

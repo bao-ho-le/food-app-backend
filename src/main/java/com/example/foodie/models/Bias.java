@@ -21,10 +21,10 @@ public class Bias {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "score không được trống")
     @Min(value = 1, message = "score phải >= 1")
     @Max(value = 5, message = "score phải <= 5")
-    private Integer score;
+    @Builder.Default
+    private Float score = 2.5f;
 
     @NotNull
     @ManyToOne

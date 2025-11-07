@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -61,7 +62,8 @@ public class User {
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Bias> biases;
+    @Builder.Default
+    private List<Bias> biases = new ArrayList<>();;
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

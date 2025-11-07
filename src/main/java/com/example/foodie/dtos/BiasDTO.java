@@ -10,8 +10,7 @@ public class BiasDTO {
     @NotNull(message = "tag id không được trống")
     private Integer tagId;
 
-    @NotNull(message = "score không được trống")
     @Min(value = 1, message = "score phải >= 1")
     @Max(value = 5, message = "score phải <= 5")
-    private Integer score;
+    private Float score = 2.5f;
 }

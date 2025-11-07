@@ -10,4 +10,5 @@ public interface BiasService {
     Bias addBias(Authentication authentication, BiasDTO biasDTO);
     Bias updateBias(Authentication authentication, BiasDTO biasDTO);
     List<Bias> getAllBiasByUser(Authentication authentication);
+    void attachAllBiasesToUser(String email);
 }

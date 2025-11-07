@@ -7,6 +7,7 @@ import com.example.foodie.repos.RoleRepository;
 import com.example.foodie.repos.UserRepository;
 import com.example.foodie.security.CustomUserDetails;
 import com.example.foodie.security.JWTService;
+import com.example.foodie.services.interfaces.BiasService;
 import com.example.foodie.services.interfaces.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder encoder;
     private AuthenticationManager authManager;
     private JWTService jwtService;
+    private final BiasService biasService;
 
     @Override
     public UserResponseDTO register(UserDTO userDTO){
@@ -44,7 +46,9 @@ public class UserServiceImpl implements UserService {
         String token = jwtService.generateToken(userDTO.getEmail());
 
         User user = User.createUserFromDTO(userDTO, role);
+
         userRepository.save(user);
+        biasService.attachAllBiasesToUser(userDTO.getEmail());
 
         return UserResponseDTO.createUserResponseFromDTO(userDTO, token);
     }
@@ -122,7 +126,6 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-
 
         return UserProfileDTO.builder()
                 .email(user.getEmail())
