@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +71,8 @@ public class BiasServiceImpl implements BiasService {
         if(biasExisting.isPresent()){
             Bias updatedBias = biasExisting.get();
             updatedBias.setScore(biasDTO.getScore());
+            updatedBias.setCreatedAt(LocalDateTime.now());      // TODO: tạm thời giải quyết đc vấn đề  notnull của created_at
+                                                                //       nhưng trong database không cập nhật được cột này
             return biasRepository.save(updatedBias);
         } else{
             Bias newBias = Bias.builder()
