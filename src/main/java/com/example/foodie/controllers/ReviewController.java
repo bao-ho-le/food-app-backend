@@ -1,5 +1,6 @@
 package com.example.foodie.controllers;
 
+import com.example.foodie.dtos.ReviewResponseDTO;
 import com.example.foodie.models.Address;
 import com.example.foodie.models.Restaurant;
 import com.example.foodie.models.Review;
@@ -20,7 +21,7 @@ public class ReviewController {
 
     @GetMapping("/dish/{dish_id}")
     public ResponseEntity<?> getAllReviewsByDishId(@PathVariable(name="dish_id") Integer dishId){
-        List<Review> reviews = reviewService.findAllReviewsByDishId(dishId);
+        List<ReviewResponseDTO> reviews = reviewService.findAllReviewsByDishId(dishId);
 
         try{
             return ResponseEntity

@@ -1,5 +1,6 @@
 package com.example.foodie.services.impl;
 
+import com.example.foodie.dtos.ReviewResponseDTO;
 import com.example.foodie.models.OrderDish;
 import com.example.foodie.models.Review;
 import com.example.foodie.repos.DishRepository;
@@ -21,11 +22,21 @@ public class ReviewServiceImpl implements ReviewService {
     private OrderDishRepository orderDishRepository;
 
     @Override
-    public List<Review> findAllReviewsByDishId(Integer dishId){
+    public List<ReviewResponseDTO> findAllReviewsByDishId(Integer dishId){
         dishRepository.findById(dishId)
                 .orElseThrow(() -> new RuntimeException("Không tồn tại dish này"));
 
-        return reviewRepository.findAllByDishId(dishId);
+        List<Review> reviews = reviewRepository.findAllByDishId(dishId);
+        
+        return reviews.stream()
+                .map(review -> new ReviewResponseDTO(
+                        review.getOrderDish().getOrder().getUser().getFullName(),
+                        review.getComment(),
+                        review.getRating(),
+                        review.getCreatedAt()
+                ))
+                .toList();
+        // return reviewRepository.findAllByDishId(dishId);
     }
 
     @Override
