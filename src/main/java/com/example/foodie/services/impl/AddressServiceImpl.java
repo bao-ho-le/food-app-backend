@@ -31,10 +31,20 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
         List<Address> allAddressesExisting = addressRepository.findByUser_Id(user.getId());
+        Address defaultAddress = null;
 
         for (Address address: allAddressesExisting){
             if (address.getAddress().equals(addressDTO.getAddress()))
                 throw new RuntimeException("User đã có địa chỉ này rồi");
+            if (address.getIsDefault())
+                defaultAddress = address;
+        }
+        
+        if (addressDTO.getIsDefault() != null && addressDTO.getIsDefault()) {
+            if (defaultAddress != null) {
+                defaultAddress.setIsDefault(false);
+                addressRepository.save(defaultAddress);
+            }
         }
 
         Address newAddress = Address.builder()
@@ -53,7 +63,7 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
-        List<Address> allAddresses = addressRepository.findByUser_Id(user.getId());
+        List<Address> allAddresses = addressRepository.findAllByUser_Id(user.getId());
         if (allAddresses.isEmpty()){
             throw new RuntimeException("User không có địa chỉ nào");
         }
