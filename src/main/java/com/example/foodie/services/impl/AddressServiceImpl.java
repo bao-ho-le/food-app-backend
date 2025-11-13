@@ -23,12 +23,15 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
         this.userRepository = userRepository;
     }
 
+    private User getUserFromAuthentication(Authentication authentication) {
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+    }
+
     @Override
     public Address addAddressByUserId(Authentication authentication, AddressDTO addressDTO){
-        String email = authentication.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        User user = getUserFromAuthentication(authentication);
 
         List<Address> allAddressesExisting = addressRepository.findByUser_Id(user.getId());
         Address defaultAddress = null;
@@ -39,7 +42,7 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
             if (address.getIsDefault())
                 defaultAddress = address;
         }
-        
+
         if (addressDTO.getIsDefault() != null && addressDTO.getIsDefault()) {
             if (defaultAddress != null) {
                 defaultAddress.setIsDefault(false);
@@ -58,10 +61,7 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
 
     @Override
     public List<Address> getAllAddressesByUser(Authentication authentication){
-        String email = authentication.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        User user = getUserFromAuthentication(authentication);
 
         List<Address> allAddresses = addressRepository.findAllByUser_Id(user.getId());
         if (allAddresses.isEmpty()){
@@ -79,9 +79,19 @@ public class AddressServiceImpl extends BaseServiceImpl<Address> implements Addr
     }
 
     @Override
-    public AddressDTO updateAddress(Integer addressId, AddressDTO addressDTO){
+    public AddressDTO updateAddress(Authentication authentication, Integer addressId, AddressDTO addressDTO){
+        User user = getUserFromAuthentication(authentication);
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại"));
+
+        if (addressDTO.getIsDefault() != null && addressDTO.getIsDefault()) {
+            Address currentDefaultAddress = addressRepository.findByUser_IdAndIsDefault(user.getId(), true)
+                    .orElse(null);
+            if (currentDefaultAddress != null && !currentDefaultAddress.getId().equals(address.getId())) {
+                currentDefaultAddress.setIsDefault(false);
+                addressRepository.save(currentDefaultAddress);
+            }
+        }
 
         address.setAddress(addressDTO.getAddress());
         address.setIsDefault(addressDTO.getIsDefault());

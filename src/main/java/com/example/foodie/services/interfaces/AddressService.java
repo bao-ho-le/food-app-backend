@@ -10,5 +10,5 @@ public interface AddressService extends BaseService<Address>{
     public Address addAddressByUserId(Authentication authentication, AddressDTO addressDTO);
     public List<Address> getAllAddressesByUser(Authentication authentication);
     public void deleteAddressById(Integer addressId);
-    public AddressDTO updateAddress(Integer addressId, AddressDTO addressDTO);
+    public AddressDTO updateAddress(Authentication authentication, Integer addressId, AddressDTO addressDTO);
 }

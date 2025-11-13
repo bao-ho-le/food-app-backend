@@ -72,9 +72,10 @@ public class AddressController extends BaseController<Address> {
     }
 
     @PutMapping("/user/{address_id}")
-    public ResponseEntity<?> updateAddress(@PathVariable(name="address_id") Integer addressId,
+    public ResponseEntity<?> updateAddress(Authentication authentication, 
+                                            @PathVariable(name="address_id") Integer addressId,
                                             @Valid @RequestBody AddressDTO addressDTO) {
-        AddressDTO addressDTORes = addressService.updateAddress(addressId, addressDTO);
+        AddressDTO addressDTORes = addressService.updateAddress(authentication, addressId, addressDTO);
 
         try{
             return ResponseEntity
