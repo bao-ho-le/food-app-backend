@@ -6,9 +6,11 @@ import com.example.foodie.models.UserDish;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+
 public interface UserDishService {
     public List<UserDish> getAllUserDishes();
-    public List<UserDish> getAllUserDishesByUserId(Integer userId);
+    public List<UserDish> getAllUserDishesByUserId(Authentication authentication);
     public UserDish addUserDish(UserDishDTO userDishDTO);
     public void deleteUserDishById(Integer userDishId);
     UserDish updateQuantity(Integer userDishId, Integer quantity);

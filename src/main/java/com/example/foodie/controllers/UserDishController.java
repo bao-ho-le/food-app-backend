@@ -6,6 +6,8 @@ import com.example.foodie.models.UserDish;
 import com.example.foodie.services.interfaces.UserDishService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,9 @@ public class UserDishController {
     private UserDishService userDishService;
 
     @GetMapping
-    public ResponseEntity<?> getAllUserDishes(){
+    public ResponseEntity<?> getAllUserDishes(Authentication authentication){
         try{
-            List<UserDish> userDishes = userDishService.getAllUserDishes();
+            List<UserDish> userDishes = userDishService.getAllUserDishesByUserId(authentication);
 
             return ResponseEntity
                     .status(HttpStatus.OK)

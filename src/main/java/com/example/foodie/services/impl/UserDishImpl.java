@@ -8,6 +8,7 @@ import com.example.foodie.repos.UserRepository;
 import com.example.foodie.services.interfaces.UserDishService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,14 +32,18 @@ public class UserDishImpl implements UserDishService {
     }
 
     @Override
-    public List<UserDish> getAllUserDishesByUserId(Integer userId){
-        List<UserDish> userDishes = userDishRepository.findAllByUser_Id(userId);
+    public List<UserDish> getAllUserDishesByUserId(Authentication authentication){
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        List<UserDish> userDishes = userDishRepository.findAllByUser_Id(user.getId());
 
-        if(userDishes.isEmpty()){
-            throw new RuntimeException("Không tồn tại userDish nào");
-        }else{
-            return userDishes;
-        }
+        // if(userDishes.isEmpty()){
+        //     throw new RuntimeException("Không tồn tại userDish nào");
+        // }else{
+        //     return userDishes;
+        // }
+        return userDishes;
     }
 
     @Override
