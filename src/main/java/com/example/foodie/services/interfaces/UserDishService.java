@@ -13,5 +13,5 @@ public interface UserDishService {
     public List<UserDish> getAllUserDishesByUserId(Authentication authentication);
     public UserDish addUserDish(UserDishDTO userDishDTO);
     public void deleteUserDishById(Integer userDishId);
-    UserDish updateQuantity(Integer userDishId, Integer quantity);
+    public void updateQuantity(Integer userDishId, Integer quantity);
 }

@@ -78,13 +78,18 @@ public class UserDishImpl implements UserDishService {
     }
 
     @Override
-    public UserDish updateQuantity(Integer userDishId, Integer quantity){
+    public void updateQuantity(Integer userDishId, Integer quantity){
         UserDish userDish = userDishRepository.findById(userDishId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy món trong giỏ"));
 
+        if (quantity <= 0){
+            userDishRepository.deleteById(userDishId);
+            return;
+        }
+
         userDish.setQuantity(quantity);
 
-        return userDishRepository.save(userDish);
+        userDishRepository.save(userDish);
     }
 
 }

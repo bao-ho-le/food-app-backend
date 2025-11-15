@@ -51,8 +51,8 @@ public class UserDishController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteById(@RequestBody Integer userDishId){
+    @DeleteMapping("/{user_dish_id}")
+    public ResponseEntity<?> deleteById(@PathVariable(name="user_dish_id") Integer userDishId){
         try{
             userDishService.deleteUserDishById(userDishId);
 
