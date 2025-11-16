@@ -11,7 +11,7 @@ public class OrderDTO {
     @NotNull
     private Integer addressId;
 
-    @NotNull
-    private List<Integer> selectedDishes;
+    // @NotNull
+    // private List<Integer> selectedDishes;
 }
 

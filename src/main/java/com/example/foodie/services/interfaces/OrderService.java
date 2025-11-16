@@ -4,6 +4,8 @@ import com.example.foodie.models.Order;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+
 public interface OrderService extends BaseService<Order>{
-    public Order createOrder(Integer userId, Integer addressId, List<Integer> selectedDishes);
+    public Order createOrder(Authentication authentication, Integer addressId);
 }

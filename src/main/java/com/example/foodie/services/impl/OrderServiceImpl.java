@@ -4,6 +4,8 @@ import com.example.foodie.models.*;
 import com.example.foodie.repos.*;
 import com.example.foodie.services.interfaces.OrderService;
 import jakarta.transaction.Transactional;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,17 +32,15 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
 
     @Transactional
     @Override
-    public Order createOrder(Integer userId, Integer addressId, List<Integer> selectedDishes){
-        List<UserDish> allUserDishByUserId = userDishRepository.findAllByUser_Id(userId);
+    public Order createOrder(Authentication authentication, Integer addressId){
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        List<UserDish> allUserDishByUserId = userDishRepository.findAllByUser_Id(user.getId());
 
         if(allUserDishByUserId.isEmpty()){
             throw new RuntimeException("Không có user dish nào");
-        }
-
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user.isEmpty()){
-            throw new RuntimeException("Không tồn tại user này");
         }
 
         Optional<Address> address = addressRepository.findById(addressId);
@@ -49,19 +49,19 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
             throw new RuntimeException("Không tồn tại địa chỉ này");
         }
 
-        List<UserDish> selectedUserDishes = allUserDishByUserId.stream()
-                .filter(userDish -> selectedDishes.contains(userDish.getDish().getId()))
-                .toList();
-
         Order newOrder = Order.builder()
-                .user(user.get())
+                .user(user)
                 .deliveryAddress(address.get().getAddress())
                 .totalPrice(0f)
                 .build();
 
         List<OrderDish> orderDishes = new ArrayList<>();
 
-        for (UserDish userDish: selectedUserDishes){
+        for (UserDish userDish: allUserDishByUserId){
+            if (userDish.getQuantity() <= 0 || userDish.getDish().isAvailable() == false){
+                continue; 
+            }
+            
             OrderDish newOrderDish = OrderDish.builder()
                     .dish(userDish.getDish())
                     .quantity(userDish.getQuantity())
@@ -76,7 +76,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
         newOrder.setTotalPrice(totalPrice(orderDishes));
 
         // Xoá các user dish đã đặt (userdish ở đây đóng vai trò như Cart)
-        userDishRepository.deleteAll(selectedUserDishes);
+        userDishRepository.deleteAll(allUserDishByUserId);
 
         return orderRepository.save(newOrder);
     }

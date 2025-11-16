@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,10 +22,10 @@ public class OrderController extends BaseController<Order>{
         this.orderService = orderService;
     }
 
-    @PostMapping("/{user_id}")
-    public ResponseEntity<?> createOrder(@PathVariable(name="user_id") Integer userId,@Valid @RequestBody OrderDTO orderDTO){
+    @PostMapping
+    public ResponseEntity<?> createOrder(Authentication authentication,@Valid @RequestBody OrderDTO orderDTO){
         try {
-            Order newOrder = orderService.createOrder(userId, orderDTO.getAddressId(), orderDTO.getSelectedDishes());
+            Order newOrder = orderService.createOrder(authentication, orderDTO.getAddressId());
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
