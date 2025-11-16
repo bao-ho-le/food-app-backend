@@ -8,4 +8,5 @@ import org.springframework.security.core.Authentication;
 
 public interface OrderService extends BaseService<Order>{
     public Order createOrder(Authentication authentication, Integer addressId);
+    public List<Order> getAllOrdersByUserId(Authentication authentication);
 }

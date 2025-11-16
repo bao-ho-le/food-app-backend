@@ -1,5 +1,6 @@
 package com.example.foodie.services.impl;
 
+import com.example.foodie.enums.Status;
 import com.example.foodie.models.*;
 import com.example.foodie.repos.*;
 import com.example.foodie.services.interfaces.OrderService;
@@ -30,6 +31,16 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
         this.addressRepository = addressRepository;
     }
 
+    @Override
+    public List<Order> getAllOrdersByUserId(Authentication authentication){
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        List<Order> allOrders = orderRepository.findAllByUser_Id(user.getId());
+        return allOrders;
+    }
+
     @Transactional
     @Override
     public Order createOrder(Authentication authentication, Integer addressId){
@@ -53,6 +64,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
                 .user(user)
                 .deliveryAddress(address.get().getAddress())
                 .totalPrice(0f)
+                .status(Status.DELIVERED)
                 .build();
 
         List<OrderDish> orderDishes = new ArrayList<>();

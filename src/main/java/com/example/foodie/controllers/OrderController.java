@@ -22,6 +22,19 @@ public class OrderController extends BaseController<Order>{
         this.orderService = orderService;
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllOrdersByUserId(Authentication authentication){
+        try{
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(orderService.getAllOrdersByUserId(authentication));   
+        } catch(RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> createOrder(Authentication authentication,@Valid @RequestBody OrderDTO orderDTO){
         try {
