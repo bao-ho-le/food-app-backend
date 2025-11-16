@@ -11,8 +11,5 @@ public class UserDishDTO {
     private Integer quantity = 1;
 
     @NotNull
-    private Integer userId;
-
-    @NotNull
     private Integer dishId;
 }

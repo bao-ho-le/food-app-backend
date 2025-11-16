@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 public interface UserDishService {
     public List<UserDish> getAllUserDishes();
     public List<UserDish> getAllUserDishesByUserId(Authentication authentication);
-    public UserDish addUserDish(UserDishDTO userDishDTO);
+    public void addUserDish(Authentication authentication, UserDishDTO userDishDTO);
     public void deleteUserDishById(Integer userDishId);
     public void updateQuantity(Integer userDishId, Integer quantity);
 }

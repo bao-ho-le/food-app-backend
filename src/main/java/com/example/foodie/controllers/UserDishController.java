@@ -36,13 +36,13 @@ public class UserDishController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUserDish(@Valid @RequestBody UserDishDTO userDishDTO){
+    public ResponseEntity<?> addUserDish(Authentication authentication, @Valid @RequestBody UserDishDTO userDishDTO){
         try {
-            UserDish newUserDish = userDishService.addUserDish(userDishDTO);
+            userDishService.addUserDish(authentication, userDishDTO);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(newUserDish);
+                    .build();
 
         } catch (RuntimeException e) {
             return ResponseEntity

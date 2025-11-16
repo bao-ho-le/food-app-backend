@@ -47,29 +47,26 @@ public class UserDishImpl implements UserDishService {
     }
 
     @Override
-    public UserDish addUserDish(UserDishDTO userDishDTO){
-        boolean isUserDishExist = userDishRepository.existsByUser_IdAndDish_Id(
-                userDishDTO.getUserId(),
-                userDishDTO.getDishId()
-        );
-
-        if (isUserDishExist){
-            throw new RuntimeException("UserDish đã tồn tại");
-        }
-
-        User user = userRepository.findById(userDishDTO.getUserId())
+    public void addUserDish(Authentication authentication, UserDishDTO userDishDTO){
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-
         Dish dish = dishRepository.findById(userDishDTO.getDishId())
                 .orElseThrow(() -> new RuntimeException("Dish không tồn tại"));
 
-        UserDish newUserDish = UserDish.builder()
-                .user(user)
-                .dish(dish)
-                .quantity(userDishDTO.getQuantity())
-                .build();
-
-        return userDishRepository.save(newUserDish);
+        Optional<UserDish> existingUserDish = userDishRepository.findByUser_IdAndDish_Id(user.getId(), userDishDTO.getDishId());
+        if (existingUserDish.isPresent()) {
+            UserDish userDish = existingUserDish.get();
+            userDish.setQuantity(userDish.getQuantity() + userDishDTO.getQuantity());
+            userDishRepository.save(userDish);
+        } else {
+            UserDish newUserDish = UserDish.builder()
+                    .user(user)
+                    .dish(dish)
+                    .quantity(userDishDTO.getQuantity())
+                    .build();
+            userDishRepository.save(newUserDish);
+        }
     }
 
     @Override
