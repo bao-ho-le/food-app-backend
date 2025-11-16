@@ -35,6 +35,19 @@ public class OrderController extends BaseController<Order>{
         }
     }
 
+    @GetMapping("/user/{order_id}")
+    public ResponseEntity<?> getAllOrderItems(@PathVariable(name="order_id") Integer orderId){
+        try{
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(orderService.getAllOrderItems(orderId));   
+        } catch(RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> createOrder(Authentication authentication,@Valid @RequestBody OrderDTO orderDTO){
         try {

@@ -1,5 +1,6 @@
 package com.example.foodie.services.impl;
 
+import com.example.foodie.dtos.OrderDishResponseDTO;
 import com.example.foodie.enums.Status;
 import com.example.foodie.models.*;
 import com.example.foodie.repos.*;
@@ -100,5 +101,33 @@ public class OrderServiceImpl extends BaseServiceImpl<Order> implements OrderSer
         }
 
         return totalPrice;
+    }
+
+    @Override
+    public List<OrderDishResponseDTO> getAllOrderItems(Integer orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+
+        if (order.isEmpty()){
+            throw new RuntimeException("Order không tồn tại");
+        }
+
+        List<OrderDishResponseDTO> orderDishResponseDTOS = new ArrayList<>();
+        for (OrderDish orderDish: order.get().getOrderDishes()){
+            Dish dish = orderDish.getDish();
+            OrderDishResponseDTO dto = OrderDishResponseDTO.builder()
+                    .id(orderDish.getId())
+                    .dishName(dish.getName())
+                    .quantity(orderDish.getQuantity())
+                    .price(orderDish.getPrice())
+                    .dishId(dish.getId())
+                    .imageUrl(dish.getImages().isEmpty() ? "https://statics.vinpearl.com/com-tam-da-nang-4_1710137440.jpg" : dish.getImages().get(0).getUrl())
+                    .restaurantName(dish.getRestaurant().getName())
+                    .reviewed(orderDish.getReview() != null)
+                    .build();
+            orderDishResponseDTOS.add(dto);
+        }
+
+        return orderDishResponseDTOS;
+
     }
 }
